@@ -4,10 +4,13 @@ import { Card, CardContent, CardDescription, CardHeader } from "@/components/ui/
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { useState } from "react";
+import { useRouter } from "next/navigation"
+// import { api } from "@/lib/api"
 
 export default function login(){
     const [email, setEmail] = useState('')
     const [password, setPassword] = useState('')
+    const router = useRouter()
 
     const handleLogin = async () =>{
 
@@ -25,9 +28,11 @@ export default function login(){
                 throw new Error(data.message || 'Falha ao fazer o login.')
             }
 
-            console.log('Login bem sucedido: ', data)
-            
-            alert('Logado')
+            if(data.token){
+                localStorage.setItem('authToken',data.token)
+            }
+
+            router.push('/dashboard')
 
         } catch (error) {
             console.error('Erro no login: ',  error)

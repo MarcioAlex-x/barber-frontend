@@ -10,6 +10,7 @@ import {
   NavigationMenuItem,
   NavigationMenuTrigger,
 } from '@/components/ui/navigation-menu'
+import { SidebarProvider } from "@/components/ui/sidebar";
 
 export const metadata: Metadata = {
   title: "Create Next App",
