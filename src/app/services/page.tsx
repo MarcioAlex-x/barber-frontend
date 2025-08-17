@@ -1,6 +1,7 @@
 'use client'
 
 import { jwtDecode } from "jwt-decode"
+import Link from "next/link"
 import { useEffect, useState } from "react"
 
 export default function Services(){
@@ -11,6 +12,7 @@ export default function Services(){
 
     useEffect(()=>{
         const fetchData = async() =>{
+            setLoading(true)
             try {
                 
                 const token = localStorage.getItem('authToken')
@@ -46,13 +48,21 @@ export default function Services(){
         fetchData()
     },[])
 
+    if(error){
+        return <div>Erro: {error}</div>
+    }
+
+    if(loading){
+        return <div>Carregando...</div>
+    }
+
     return(
         <div className="px-8">
             <h1 className="text-center font-bold text-blue-600 text-3xl">Serviços</h1>
             <ul className="border p-8 text-center mt-8 border-blue-200 rounded">
                 {
                 services.map(service =>(
-                    <li key={service.id}>{service.name} - R${service.price.replace('.',',')}</li>
+                    <li key={service.id}><Link href={`/services/${service.id}`}>{service.name}</Link> - R${service.price.replace('.',',')}</li>
                 ))
             }
             </ul>
