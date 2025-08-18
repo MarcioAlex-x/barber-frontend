@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from "react"
 import { useParams } from "next/navigation"
+import Link from "next/link"
 
 export default function ServicePage() {
 
@@ -43,27 +44,34 @@ export default function ServicePage() {
                 setService(data)
             } catch (err) {
                 setError(err.message)
-            }finally{
+            } finally {
                 setLoading(false)
             }
 
         }
 
         fetchApi()
-        
-        
+
+
     }, [id])
-    if(loading){
+    if (loading) {
         return <div>Carregando...</div>
     }
 
-    if(error){
+    if (error) {
         return <div>Erro: {error}</div>
     }
     return (
         <div>
-            <p>{id}</p>
-            <p>Nome: {service?.name}</p>
+            <div>
+                <Link className="ms-6" href='/dashboard'>Dashboard</Link>
+            </div>
+            <h2 className="text-center text-blue-800 text-3xl">Lista de Serviços</h2>
+            <div className="grid place-items-center mt-6">
+                <div className="border rounded p-8 w-lg text-center text-2xl">
+                    <p>Nome: {service?.name}</p>
+                </div>
+            </div>
         </div>
     )
 }
