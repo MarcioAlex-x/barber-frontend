@@ -3,6 +3,8 @@
 import { useParams } from "next/navigation"
 import { useEffect, useState } from "react"
 
+import { Button } from "@/components/ui/button"
+
 export default function UserPage(){
     const [user,setUser] = useState(null)
     const [loading, setLoading] = useState(true)
