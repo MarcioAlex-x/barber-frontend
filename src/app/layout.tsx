@@ -29,18 +29,7 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en">
-      <NavigationMenu className="ms-5">
-        <NavigationMenuList>
-          <NavigationMenuItem>
-            <NavigationMenuTrigger>Menu</NavigationMenuTrigger>
-            <NavigationMenuContent>
-              <NavigationMenuLink>
-                Login
-              </NavigationMenuLink>
-            </NavigationMenuContent>
-          </NavigationMenuItem>
-        </NavigationMenuList>
-      </NavigationMenu>
+      
       <body
         className={roboto.className}
       >

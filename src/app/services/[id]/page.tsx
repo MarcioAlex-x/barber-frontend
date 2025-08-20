@@ -12,7 +12,7 @@ import { jwtDecode } from "jwt-decode"
 
 export default function ServicePage() {
 
-    const [service, setService] = useState(null)
+    const [service, setService] = useState({name:''})
     const [loading, setLoading] = useState(true)
     const [error, setError] = useState('')
     const [isAdmin, setIsAdmin] = useState(null)
@@ -147,7 +147,8 @@ export default function ServicePage() {
     return (
         <div>
             <div>
-                <Link className="ms-6" href='/dashboard'>Dashboard</Link>
+                <Link className="mx-6" href='/dashboard'>Dashboard</Link>
+                <Link href='/services'>Serviços</Link>
             </div>
             <h2 className="text-center text-blue-800 text-3xl">Detalhes do Serviço</h2>
             <div className="grid place-items-center mt-6">

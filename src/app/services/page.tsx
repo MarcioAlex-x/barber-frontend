@@ -64,6 +64,8 @@ export default function Services() {
         <Spinner className="text-blue-500" size={64} />
     </div>
 
+    
+
     if (error) return (
         <Alert>
             <AlertTitle>Erro</AlertTitle>
