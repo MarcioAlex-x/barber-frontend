@@ -2,7 +2,6 @@
 
 import { jwtDecode } from "jwt-decode"
 import { useEffect, useState } from "react"
-import { useRouter } from "next/navigation"
 import Link from "next/link"
 
 import {
@@ -14,57 +13,32 @@ import {
 import {
     Spinner,
 } from '@/components/ui/shadcn-io/spinner'
+import { fetchApi } from "@/lib/api"
 
 
 export default function UsersPage() {
     const [users, setUsers] = useState([])
-    const [user, setUser] = useState(null)
     const [error, setError] = useState('')
     const [loading, setLoading] = useState(true)
-    const [isAdmin, setIsAdmin] = useState(null)
-    const router = useRouter()
 
     useEffect(() => {
-        const fetchApi = async () => {
+        const fetchData = async () =>{
+            setLoading(true)
+            setError('')
+
             try {
-                const token = localStorage.getItem('authToken')
-                if (!token) {
-                    router.replace('/login')
-                    return
-                }
-
-                const decodedUser = jwtDecode(token)
-                if (!decodedUser.isAdmin) {
-                    router.replace('/dashboard')
-                    return
-                }
-
-                const usersResponse = await fetch('http://localhost:3001/users', {
-                    method: 'GET',
-                    headers: {
-                        'Authorization': `Bearer ${token}`
-                    }
-                })
-
-                if (!usersResponse.ok) {
-                    throw new Error('Falha ao tentar listar usuários.')
-                }
-
-                const data = await usersResponse.json()
-
-                setUsers(data)
-
+                const userData = await fetchApi('users')
+                setUsers(userData)
             } catch (err) {
                 setError(err.message)
-                console.log(err)
-            } finally {
+                console.log('Erro ao buscar usuários: ',err.message)
+            }finally{
                 setLoading(false)
             }
         }
+        fetchData()
 
-        fetchApi()
-
-    }, [router])
+    }, [])
 
     if (loading) return <div className="w-full h-screen  flex align-center justify-center">
         <Spinner className="text-blue-500" size={64} />
@@ -73,7 +47,7 @@ export default function UsersPage() {
     if (error) return (
         <Alert>
             <AlertTitle>Erro</AlertTitle>
-            <AlertDescription>error</AlertDescription>
+            <AlertDescription>{error}</AlertDescription>
         </Alert>)
 
     return (
@@ -86,14 +60,14 @@ export default function UsersPage() {
                     Lista de usuários
                 </h2>
                 {
-                    users.map(userData => (
+                    users.map(user => (
                         <ul className="w-md">
-                            <Link href={`/users/${userData.id}`}>
+                            <Link href={`/users/${user.id}`}>
                                 <li
-                                    key={userData.id}
+                                    key={user.id}
                                     className="border rounded px-8 py-2 mb-2 text-left"
                                 >
-                                    {userData.name}
+                                    {user.name}
                                 </li>
                             </Link>
                         </ul>

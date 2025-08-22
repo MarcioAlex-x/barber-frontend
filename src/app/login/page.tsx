@@ -5,41 +5,34 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { useState } from "react";
 import { useRouter } from "next/navigation"
-// import { api } from "@/lib/api"
+import { fetchLogin } from "@/lib/api";
 
-export default function login(){
+export default function LoginPage(){
     const [email, setEmail] = useState('')
     const [password, setPassword] = useState('')
+    const [error, setError] = useState('')
+    const [isLoading, setIsLoading] = useState(false)
+
     const router = useRouter()
 
-    const handleLogin = async () =>{
+    const handleLogin = async (e) =>{
+        e.preventDefault()
 
+        setError('')
+        setIsLoading(true)
         try {
-            const response = await fetch('http://localhost:3001/auth/login', {
-                method: 'POST',
-                headers:{
-                    'Content-Type':'application/json',
-                },
-                body:JSON.stringify({email, password})
-            })
-            const data = await response.json()
-
-            if(!response.ok){
-                throw new Error(data.message || 'Falha ao fazer o login.')
-            }
+            const data = await fetchLogin(email,password)
 
             if(data.token){
                 localStorage.setItem('authToken',data.token)
+                router.push('/dashboard')
             }
-
-            router.push('/dashboard')
-
-        } catch (error) {
-            console.error('Erro no login: ',  error)
-            alert(error.message)
-        }
-
-            
+        } catch (err) {
+            console.error('Erro no login: ', err.message)
+            setError(err.message)
+        }finally{
+            setIsLoading(false)
+        }            
     }
 
     return(
@@ -51,32 +44,32 @@ export default function login(){
                         <CardDescription className="text-sky-900">Faça login para continuar!</CardDescription>
                     </div>
 
-                    <div className="p-2">
-                        <Label className="mb-2">E-mail:</Label>
-                        <Input
-                            type="text"
-                            placeholder="exemplo@email.com"
-                            id="email"
-                            value={email}
-                            onChange={e => setEmail(e.target.value)}
+                    <form onSubmit={handleLogin}>
+                        <div className="p-2">
+                            <Label className="mb-2">E-mail:</Label>
+                            <Input
+                                type="text"
+                                placeholder="exemplo@email.com"
+                                id="email"
+                                value={email}
+                                onChange={e => setEmail(e.target.value)}
+                                />
+                        </div>
+                        <div className="p-2 mb-4">
+                            <Label className="mb-2">Senha:</Label>
+                            <Input
+                                type="password"
+                                id="password"
+                                value={password}
+                                onChange={e => setPassword(e.target.value)}
                             />
-                    </div>
-
-                    <div className="p-2 mb-4">
-                        <Label className="mb-2">Senha:</Label>
-                        <Input
-                            type="password"
-                            id="password"
-                            value={password}
-                            onChange={e => setPassword(e.target.value)}
-                        />
-                    </div>
-                    <Button
-                        type="button"
-                        className="bg-sky-600 hover:bg-sky-700 cursor-pointer"
-                        onClick={handleLogin}>
-                            Entrar
-                    </Button>
+                        </div>
+                        <Button
+                            type="submit"
+                            className="bg-sky-600 hover:bg-sky-700 cursor-pointer">
+                                Entrar
+                        </Button>
+                    </form>
                 </Card>
             </div>
         </div>

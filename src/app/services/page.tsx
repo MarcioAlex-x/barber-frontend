@@ -13,6 +13,7 @@ import {
 import {
     Spinner,
 } from '@/components/ui/shadcn-io/spinner'
+import { fetchApi } from "@/lib/api"
 
 export default function Services() {
     const [user, setUser] = useState(null)
@@ -24,29 +25,10 @@ export default function Services() {
 
     useEffect(() => {
         const fetchData = async () => {
+            setError('')
             setLoading(true)
             try {
-
-                const token = localStorage.getItem('authToken')
-                if (!token) {
-                    throw new Error("Acesso negado.Faça login novamente.")
-                }
-
-                const decodedUser = jwtDecode(token)
-                setUser(decodedUser)
-
-                const servicesResponse = await fetch('http://localhost:3001/services', {
-                    method: 'GET',
-                    headers: {
-                        'Authorization': `Bearer ${token}`
-                    }
-                })
-
-                if (!servicesResponse.ok) {
-                    throw new Error('Falha ao tentar listar os serviços.')
-                }
-
-                const serviceData = await servicesResponse.json()
+                const serviceData = await fetchApi('services')
                 setServices(serviceData)
 
             } catch (err) {

@@ -1,34 +1,44 @@
-const api_url = "http://localhost:3001";
+const apiUrl = 'http://localhost:3001'
 
-const fetchApi = async (endpoint, options = {}) => {
-  const token = localStorage.getItem("authToken");
+export const fetchLogin = async (email, password) =>{
+  const response = await fetch(`${apiUrl}/auth/login`,{
+    method: 'POST',
+    headers:{
+      'Content-Type':'application/json'
+    },
+    body: JSON.stringify({email, password})
+  })
 
-  const headers = {
-    "Content-Type": "application/json",
-    ...options.headers,
-  };
-
-  if (token) {
-    headers["Authorization"] = `Bearer ${token}`;
+  if(!response.ok){
+    const errorData = await response.json().catch(()=>({message:'Credenciais inválidas.'}))
+    throw new Error(errorData.message || 'Falha no login.')
   }
-  
 
-  const response = await fetch(`${api_url}${endpoint}`, {
+  return response.json()
+}
+
+export const fetchApi = async (endPoint, options={}) =>{
+  const token = localStorage.getItem('authToken')
+  if(!token){
+    throw new Error('Não autorzizado. Faça login outra vez.')
+  }
+
+  const defaultHearders = {
+    'Content-Type':'application/json',
+    'Authorization':`Bearer ${token}`
+  }
+
+  const response = await fetch(`${apiUrl}/${endPoint}`,{
     ...options,
-    headers,
-  });
-
-  if (!response.ok) {
-    const errorData = await response.json();
-    throw new Error(errorData.message || "Ops, algo de errado não está certo.");
+    headers:{
+      ...defaultHearders,
+      ...options.headers,
+    }
+  })
+  if(!response.ok){
+    const errorData = await response.json()
+    throw new Error(errorData || 'Falha na solicitação.')
   }
 
-  return response.json();
-
-  export const api = {
-    get: (endpoint) =>fetchApi(endpoint),
-    post: (endpoint, body) => fetchApi(endpoint, {method: 'POST', body: JSON.stringify(body)}),
-    put: (endpoint, body) => fetchApi(endpoint, {method: 'PUT', body: JSON.stringify(body)}),
-    delete: (endpoint) => fetchApi(endpoint, {method: 'DELETE'})
-  }
-};
+  return response.json()
+}

@@ -3,6 +3,7 @@
 import { useState, useEffect } from "react"
 import { jwtDecode } from 'jwt-decode'
 import Link from "next/link"
+import { fetchApi } from "@/lib/api"
 
 export default function Dasboard() {
     const [user, setUser] = useState(null)
@@ -10,52 +11,15 @@ export default function Dasboard() {
     const [users, setUsers] = useState([])
     const [loading, setLoading] = useState(true)
     const [error, setError] = useState('')
-    const [adminDasboardMessageFor, setAdminDashboardFor] = useState('')
 
     useEffect(() => {
         const fetchData = async () => {
             try {
-                const token = localStorage.getItem('authToken')
-                if (!token) {
-                    throw new Error("Acesso negado.")
-                }
+                const usersData = await fetchApi('users')
+                setUsers(usersData)
 
-                const decodedUser = jwtDecode(token)
-                setUser(decodedUser)
-
-                const servicesResponse = await fetch('http://localhost:3001/services', {
-                    method: 'GET',
-                    headers: {
-                        'Authorization': `Bearer ${token}`
-                    }
-                })
-
-                if (!servicesResponse.ok) {
-                    throw new Error('Falha ao tentar encotrar os serviços.')
-                }
-
-                const servicesData = await servicesResponse.json()
+                const servicesData = await fetchApi('services')
                 setServices(servicesData)
-
-                if (decodedUser.isAdmin) {
-                    const usersResponse = await fetch('http://localhost:3001/users', {
-                        method: 'GET',
-                        headers: {
-                            'Authorization': `Bearer ${token}`
-                        }
-                    })
-
-                    if (!usersResponse.ok) {
-                        throw new Error('Falha ao tentar buscar usuários.')
-                    }
-
-                    const usersData = await usersResponse.json()
-                    setUsers(usersData)
-
-                }
-
-                
-                setAdminDashboardFor(' e usuários')
 
             } catch (err) {
                 setError(err.message)
@@ -100,7 +64,7 @@ export default function Dasboard() {
             </aside>
             <main className="flex-1 p-8">
                 <h1 className="text-4xl font-bold text-center">Painel</h1>
-                <p className="text-center text-blue-800 mt-6 text-2xl">Veja todos os <span className="font-semibold"><Link href='/services'>serviços</Link></span> <span className="font-semibold"><Link href='/users'>{adminDasboardMessageFor}</Link></span></p>
+                <p className="text-center text-blue-800 mt-6 text-2xl">Veja todos os <span className="font-semibold"><Link href='/services'>serviços</Link> e </span> <span className="font-semibold"><Link href='/users'>Usuários</Link></span></p>
             </main>
         </div>
     )

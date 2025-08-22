@@ -9,6 +9,7 @@ import { Label } from "@radix-ui/react-label"
 import { Card, CardTitle } from "@/components/ui/card"
 import { Input } from "@/components/ui/input"
 import { jwtDecode } from "jwt-decode"
+import { fetchApi } from "@/lib/api"
 
 export default function ServicePage() {
 
@@ -29,30 +30,13 @@ export default function ServicePage() {
             return
         }
 
-        const fetchApi = async () => {
+        const fetchService = async () => {
             setLoading(true)
 
             try {
 
-                const token = localStorage.getItem('authToken')
-
-                if (!token) {
-                    throw new Error('Erro de autorização. Token não encontrado.')
-                }
-
-                const serviceResponse = await fetch(`http://localhost:3001/services/${id}`, {
-                    method: 'GET',
-                    headers: {
-                        'Authorization': `Bearer ${token}`
-                    }
-                })
-
-                if (!serviceResponse.ok) {
-                    throw new Error('Erro ao tentar buscar os dados do serviço.')
-                }
-
-                const data = await serviceResponse.json()
-                setService(data)
+                const serviceData = await fetchApi(`services/${id}`)
+                setService(serviceData)
             } catch (err) {
                 setError(err.message)
             } finally {
@@ -61,8 +45,7 @@ export default function ServicePage() {
 
         }
 
-        fetchApi()
-
+        fetchService()
 
     }, [id])
 
@@ -70,31 +53,15 @@ export default function ServicePage() {
         e.preventDefault()
 
         try {
-            const token = localStorage.getItem('authToken')
 
-            if (!token) {
-                throw new Error('Erro ao tentar buscar os dados do serviço.')
-            }
-
-            const decodedUser = jwtDecode(token)
-            setIsAdmin(decodedUser.isAdmin)
-
-            const response = await fetch(`http://localhost:3001/services/${id}`, {
-                method: 'PUT',
-                headers: {
-                    'Content-Type':'application/json',
-                    'Authorization': `Bearer ${token}`
-                },
-                body: JSON.stringify(editedService)
+            const fetchService = await fetchApi(`services/${id}`,{
+                method:'PUT',
+                body:JSON.stringify(editedService)
             })
 
-            if (!response.ok) {
-                throw new Error('Falha ao tentar atualizar o serviço.')
-            }
 
-            const updatedData = await response.json()
 
-            setService(updatedData)
+            setService(fetchService)
             setIsEditing(false)
 
         } catch (err) {
@@ -116,15 +83,12 @@ export default function ServicePage() {
                 throw new Error('Não autorizado')
             }
 
-            const response = await fetch(`http://localhost:3001/services/${id}`, {
-                method: 'DELETE',
-                headers: {
-                    'Authorization': `Bearer ${token}`
-                }
+            const fetchService = await fetchApi(`services/${id}`, {
+                method: 'DELETE'
             })
 
-            if (!response.ok) {
-                throw new Error("Falha ao tentar excluir o serviço.")
+            if(!fetchApi.ok){
+                setError('Erro ao tentar excluir o seviço.')
             }
 
             alert('Serviço excluído com sucesso.')
