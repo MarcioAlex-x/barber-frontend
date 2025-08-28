@@ -10,6 +10,7 @@ import {
   NavigationMenuItem,
   NavigationMenuTrigger,
 } from '@/components/ui/navigation-menu'
+import { SidebarProvider } from "@/components/ui/sidebar";
 
 export const metadata: Metadata = {
   title: "Create Next App",
@@ -27,19 +28,8 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en">
-      <NavigationMenu className="ms-5">
-        <NavigationMenuList>
-          <NavigationMenuItem>
-            <NavigationMenuTrigger>Menu</NavigationMenuTrigger>
-            <NavigationMenuContent>
-              <NavigationMenuLink>
-                Login
-              </NavigationMenuLink>
-            </NavigationMenuContent>
-          </NavigationMenuItem>
-        </NavigationMenuList>
-      </NavigationMenu>
+    <html lang="pt-br">
+      
       <body
         className={roboto.className}
       >
